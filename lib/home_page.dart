@@ -1,11 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zego_cloud_video_call/models/user_model.dart';
+import 'package:zego_cloud_video_call/services/firebase_services.dart';
+import 'package:zego_cloud_video_call/widgets/user_card.dart';
 
 import 'call_page.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  final TextEditingController callIdController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +19,8 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(title: Text('Flutter video call app')),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
+            padding: const EdgeInsets.all(16.0),
+            /* child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -43,13 +49,40 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-          ),
+          ),*/
+            child: Center(
+              child: StreamBuilder(stream: FirebaseServices.buildViews,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    final List<QueryDocumentSnapshot>? docs = snapshot.data
+                        ?.docs;
+                    if (docs == null) {
+                      return Text('No data');
+                    }
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: docs.length,
+                        itemBuilder: (context, index) {
+                          final model = UserModel.fromJson(
+                              docs[index].data() as Map<String, dynamic>);
+                          if (model.username !=
+                              FirebaseServices.currentUser?.username) {
+                            return UserCard(userModel: model);
+                          }
+                          return SizedBox.shrink();
+                        });
+                  }),
+            )
         ),
       ),
     );
   }
 
-  void _startCall(BuildContext context) {
+/*  void _startCall(BuildContext context) {
     final callId = callIdController.text.trim();
     if (callId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -63,8 +96,13 @@ class HomePage extends StatelessWidget {
       );
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (context){
-      return CallPage(callId:callId);
-    }));
-  }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return CallPage(callId: callId);
+        },
+      ),
+    );
+  }*/
 }
