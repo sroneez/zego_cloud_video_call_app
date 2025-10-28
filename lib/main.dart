@@ -1,25 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:zego_cloud_video_call/home_page.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:firebase_authentication_client/firebase_authentication_client.dart';
+import 'package:user_repository/user_repository.dart';
 
-void main() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
-}
+import 'app/view/app.dart';
+import 'bootstrap.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+void main() => bootstrap(() async {
+      final firebaseAuthenticationClient = FirebaseAuthenticationClient();
+      final userRepository =
+          UserRepository(authenticationClient: firebaseAuthenticationClient);
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Zegocloud Video Call App',
-      theme: ThemeData(
-        primaryColor: Colors.brown.shade200,
-        shadowColor: Colors.brown.withOpacity(.3),
-      ),
-      home: HomePage(),
-    );
-  }
-}
+      return App(
+        userRepository: userRepository,
+        user: await userRepository.user.first,
+      );
+    });

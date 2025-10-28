@@ -25,6 +25,12 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.zego_cloud_video_call"
+
+        // ✅ CORRECTED: Use mutableMapOf instead of mapOf
+//        manifestPlaceholders = mutableMapOf(
+//            "appAuthRedirectScheme" to "com.example.zego_cloud_video_call"
+//        )
+
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
